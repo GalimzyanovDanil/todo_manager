@@ -2,35 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:todo_manager/ui/widgets/task_form/task_form_widget_model.dart';
 
 class TaskFormWidget extends StatefulWidget {
-  const TaskFormWidget({Key? key}) : super(key: key);
+  const TaskFormWidget({Key? key, required this.groupKey}) : super(key: key);
+  final int groupKey;
 
   @override
   State<TaskFormWidget> createState() => _TaskFormWidgetState();
 }
 
 class _TaskFormWidgetState extends State<TaskFormWidget> {
-  TaskFormWidgetModel? _model;
+  late final TaskFormWidgetModel _model;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_model == null) {
-      final groupKey = ModalRoute.of(context)?.settings.arguments as int;
-      _model = TaskFormWidgetModel(groupKey: groupKey);
-    }
+  void initState() {
+    super.initState();
+    _model = TaskFormWidgetModel(groupKey: widget.groupKey);
   }
 
   @override
   Widget build(BuildContext context) {
-    final model = _model;
-    if (model != null) {
-      return TaskFormWidgetModelProvider(
-          model: model, child: const _TaskFormWidgetBody());
-    } else {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
+    return TaskFormWidgetModelProvider(
+        model: _model, child: const _TaskFormWidgetBody());
   }
 }
 
@@ -63,7 +54,7 @@ class _TaskNameWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _model = TaskFormWidgetModelProvider.watch(context)?.model;
+    final _modelProvider = TaskFormWidgetModelProvider.watch(context)?.model;
     return TextField(
       keyboardType: TextInputType.name,
       textCapitalization: TextCapitalization.sentences,
@@ -71,8 +62,8 @@ class _TaskNameWidget extends StatelessWidget {
       minLines: null,
       maxLines: null,
       expands: true,
-      onChanged: (value) => _model?.taskText = value,
-      onEditingComplete: () => _model?.saveTask(context),
+      onChanged: (value) => _modelProvider?.taskText = value,
+      onEditingComplete: () => _modelProvider?.saveTask(context),
       decoration: const InputDecoration(
         // errorText: _model!.groupNameIsEmpty ? 'Введите имя группы' : null,
         border: InputBorder.none,

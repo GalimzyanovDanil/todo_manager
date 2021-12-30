@@ -11,6 +11,7 @@ class MyApp extends StatelessWidget {
       title: 'ToDo Manager',
       routes: mainNavigation.routes,
       initialRoute: mainNavigation.initialRoute,
+      onGenerateRoute: mainNavigation.onGenerateRoute,
     );
   }
 }
