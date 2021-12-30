@@ -17,7 +17,7 @@ class Task extends HiveObject {
 
   @override
   String toString() {
-    // TODO: implement toString
+    
     return '$text $isDone';
   }
 }

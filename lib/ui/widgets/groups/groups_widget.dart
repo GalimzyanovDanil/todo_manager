@@ -42,7 +42,7 @@ class _GroupList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _model = GroupsWidgetModelProvider.watch(context)?.model;
-    final _groups = _model?.groups;
+    
     return Center(
       child: ListView.separated(
         itemCount: _model?.groups.length ?? 0,
