@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todo_manager/widgets/tasks/tasks_widget_model.dart';
+import 'package:todo_manager/ui/widgets/tasks/tasks_widget_model.dart';
 
 class TasksWidget extends StatefulWidget {
   const TasksWidget({Key? key}) : super(key: key);

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:todo_manager/widgets/group_form/group_form_widget_model.dart';
-import 'package:todo_manager/widgets/task_form/task_form_widget_model.dart';
+import 'package:todo_manager/ui/widgets/group_form/group_form_widget_model.dart';
+import 'package:todo_manager/ui/widgets/task_form/task_form_widget_model.dart';
 
 class TaskFormWidget extends StatefulWidget {
   const TaskFormWidget({Key? key}) : super(key: key);
