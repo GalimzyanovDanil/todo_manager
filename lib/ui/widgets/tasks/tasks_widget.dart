@@ -3,7 +3,7 @@ import 'package:todo_manager/ui/widgets/tasks/tasks_widget_model.dart';
 
 class TasksWidget extends StatefulWidget {
   final int groupKey;
-  const TasksWidget({Key? key, required this.groupKey}) : super(key: key);
+  const TasksWidget({required this.groupKey, Key? key}) : super(key: key);
 
   @override
   State<TasksWidget> createState() => _TasksWidgetState();
@@ -24,7 +24,9 @@ class _TasksWidgetState extends State<TasksWidget> {
   @override
   Widget build(BuildContext context) {
     return TasksWidgetModelProvider(
-        model: _model, child: const _TasksWidgetBody());
+      model: _model,
+      child: const _TasksWidgetBody(),
+    );
   }
 }
 
@@ -55,14 +57,13 @@ class _TasksWidgetList extends StatelessWidget {
     final _modelProvider = TasksWidgetModelProvider.watch(context)?.model;
     return ListView.separated(
       itemCount: _modelProvider?.group?.tasks?.length ?? 0,
-      separatorBuilder: (BuildContext context, int index) {
+      separatorBuilder: (context, index) {
         return const Divider(
           height: 10,
         );
       },
-      itemBuilder: (BuildContext context, int index) {
+      itemBuilder: (context, index) {
         return Dismissible(
-          direction: DismissDirection.horizontal,
           background: const ColoredBox(
             color: Colors.red,
           ),
@@ -83,7 +84,10 @@ class _TasksWidgetList extends StatelessWidget {
 
 class _TaskWidgetRow extends StatelessWidget {
   final int index;
-  const _TaskWidgetRow({Key? key, required this.index}) : super(key: key);
+  const _TaskWidgetRow({
+    required this.index,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +95,7 @@ class _TaskWidgetRow extends StatelessWidget {
 
     return ListTile(
       leading: Checkbox(
-        onChanged: (bool? value) {
+        onChanged: (value) {
           _modelProvider.doneToogle(index);
         },
         value: _modelProvider.tasks[index].isDone,
@@ -99,9 +103,10 @@ class _TaskWidgetRow extends StatelessWidget {
       title: Text(
         _modelProvider.tasks[index].text,
         style: TextStyle(
-            decoration: (_modelProvider.tasks[index].isDone)
-                ? TextDecoration.lineThrough
-                : null),
+          decoration: (_modelProvider.tasks[index].isDone)
+              ? TextDecoration.lineThrough
+              : null,
+        ),
       ),
     );
   }

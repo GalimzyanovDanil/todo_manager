@@ -13,7 +13,9 @@ class _GroupsWidgetState extends State<GroupsWidget> {
   @override
   Widget build(BuildContext context) {
     return GroupsWidgetModelProvider(
-        model: _model, child: const _GroupsWidgetBody());
+      model: _model,
+      child: const _GroupsWidgetBody(),
+    );
   }
 }
 
@@ -42,18 +44,18 @@ class _GroupList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _model = GroupsWidgetModelProvider.watch(context)?.model;
-    
+
     return Center(
       child: ListView.separated(
         itemCount: _model?.groups.length ?? 0,
-        separatorBuilder: (BuildContext context, int index) {
+        separatorBuilder: (context, index) {
           return const Divider(
             height: 10,
           );
         },
-        itemBuilder: (BuildContext context, int index) {
+        itemBuilder: ( context,  index) {
           return Dismissible(
-            direction: DismissDirection.horizontal,
+            
             // behavior: HitTestBehavior.translucent,
             background: const ColoredBox(
               color: Colors.red,

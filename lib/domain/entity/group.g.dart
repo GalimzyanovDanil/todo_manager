@@ -29,6 +29,7 @@ class GroupAdapter extends TypeAdapter<Group> {
       ..write(obj.name)
       ..writeByte(1)
       ..write(obj.tasks);
+      
   }
 
   @override

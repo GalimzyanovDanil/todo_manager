@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:todo_manager/ui/widgets/task_form/task_form_widget_model.dart';
 
 class TaskFormWidget extends StatefulWidget {
-  const TaskFormWidget({Key? key, required this.groupKey}) : super(key: key);
   final int groupKey;
+
+  const TaskFormWidget({required this.groupKey, Key? key}) : super(key: key);
 
   @override
   State<TaskFormWidget> createState() => _TaskFormWidgetState();
@@ -21,7 +22,9 @@ class _TaskFormWidgetState extends State<TaskFormWidget> {
   @override
   Widget build(BuildContext context) {
     return TaskFormWidgetModelProvider(
-        model: _model, child: const _TaskFormWidgetBody());
+      model: _model,
+      child: const _TaskFormWidgetBody(),
+    );
   }
 }
 
@@ -59,7 +62,6 @@ class _TaskNameWidget extends StatelessWidget {
       keyboardType: TextInputType.name,
       textCapitalization: TextCapitalization.sentences,
       autofocus: true,
-      minLines: null,
       maxLines: null,
       expands: true,
       onChanged: (value) => _modelProvider?.taskText = value,

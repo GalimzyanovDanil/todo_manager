@@ -1,67 +1,71 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todo_manager/domain/entity/group.dart';
-import 'package:todo_manager/domain/entity/task.dart';
+import 'package:todo_manager/domain/hive_box_manager/hive_box_manager.dart';
+import 'package:todo_manager/ui/navigation/main_navigation.dart';
 
 class GroupsWidgetModel extends ChangeNotifier {
-  var _groups = <Group>[];
+  late final Future<Box<Group>> _box;
+  List<Group> get groups => _groups.toList();
+  List<Group> _groups = <Group>[];
 
   GroupsWidgetModel() {
     _setup();
   }
 
-  List<Group> get groups =>
-      _groups.toList(); //toList для того что бы возвращать совсем другой лист
-
+  //toList для того что бы возвращать совсем другой лист
   void showForm(BuildContext context) {
-    Navigator.of(context).pushNamed('groups/form');
+    Navigator.of(context).pushNamed(MainNavigationRoutesName.groupForm);
   }
 
-  void showTasks(BuildContext context, int index) async {
-    if (!Hive.isAdapterRegistered(1)) Hive.registerAdapter(GroupAdapter());
-    final box = await Hive.openBox<Group>('groups_box');
-    final groupKey = box.keyAt(index) as int;
-    Navigator.of(context).pushNamed('groups/tasks', arguments: groupKey);
+  Future<void> showTasks(BuildContext context, int index) async {
+    final groupKey = (await _box).keyAt(index) as int;
+    unawaited(
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pushNamed(
+        MainNavigationRoutesName.tasks,
+        arguments: groupKey,
+      ),
+    );
   }
 
-  void removeGroup(int index) async {
-    if (!Hive.isAdapterRegistered(1)) Hive.registerAdapter(GroupAdapter());
-    final box = await Hive.openBox<Group>('groups_box');
-    if (!Hive.isAdapterRegistered(2)) Hive.registerAdapter(TaskAdapter());
-    await Hive.openBox<Task>('tasks_box');
-    box.getAt(index)?.tasks?.deleteAllFromHive();
-    await box.deleteAt(index);
+  Future<void> removeGroup(int index) async {
+    //Открытие TaskBox для того что бы удалить таски внедренные в группу
+    await BoxManager.instance.openTaskBox();
+    await (await _box).getAt(index)?.tasks?.deleteAllFromHive();
+    await (await _box).deleteAt(index);
 
-    _groups = box.values.toList();
+    _groups = (await _box).values.toList();
   }
 
-  void _readGroupsFromHive(Box<Group> box) {
-    _groups = box.values.toList();
+  Future<void> _readGroupsFromHive(Future<Box<Group>> box) async {
+    _groups = (await box).values.toList();
     notifyListeners();
   }
 
-  void _setup() async {
-    if (!Hive.isAdapterRegistered(1)) Hive.registerAdapter(GroupAdapter());
-    final box = await Hive.openBox<Group>('groups_box');
-    _readGroupsFromHive(box);
-    box.listenable().addListener(() => _readGroupsFromHive(box));
-    print(_groups);
+  Future<void> _setup() async {
+    _box = BoxManager.instance.openGroupBox();
+    unawaited(_readGroupsFromHive(_box)) ;
+    (await _box).listenable().addListener(() => _readGroupsFromHive(_box));
   }
 }
 
 class GroupsWidgetModelProvider extends InheritedNotifier {
+  final GroupsWidgetModel model;
+
   const GroupsWidgetModelProvider({
-    Key? key,
     required Widget child,
     required this.model,
+    Key? key,
+    
   }) : super(
           key: key,
           child: child,
           notifier: model,
         );
 
-  final GroupsWidgetModel model;
   static GroupsWidgetModelProvider? watch(BuildContext context) {
     return context
         .dependOnInheritedWidgetOfExactType<GroupsWidgetModelProvider>();

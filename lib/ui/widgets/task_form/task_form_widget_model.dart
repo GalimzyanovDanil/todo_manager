@@ -1,48 +1,47 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-
-import 'package:todo_manager/domain/entity/group.dart';
 import 'package:todo_manager/domain/entity/task.dart';
+import 'package:todo_manager/domain/hive_box_manager/hive_box_manager.dart';
 
 class TaskFormWidgetModel {
-  var taskText = '';
+  String taskText = '';
   int groupKey;
   TaskFormWidgetModel({
     required this.groupKey,
   });
 
-  void saveTask(BuildContext context) async {
+  Future<void> saveTask(BuildContext context) async {
     if (taskText.isEmpty) return;
 
-    if (!Hive.isAdapterRegistered(1)) Hive.registerAdapter(GroupAdapter());
-    if (!Hive.isAdapterRegistered(2)) Hive.registerAdapter(TaskAdapter());
+    final groupsBox = await BoxManager.instance.openGroupBox();
+    final tasksBox = await BoxManager.instance.openTaskBox();
 
-    final tasksBox = await Hive.openBox<Task>('tasks_box');
     final task = Task(text: taskText, isDone: false);
     await tasksBox.add(task);
 
-    final groupsBox = await Hive.openBox<Group>('groups_box');
     final group = groupsBox.get(groupKey);
-    
+    group?.addTask(tasksBox, task);
 
-    group?.addTask(tasksBox, task); //!!!!! groupsBox
-    print(group?.tasks);
+    // ignore: use_build_context_synchronously
     Navigator.of(context).pop();
   }
 }
 
 class TaskFormWidgetModelProvider extends InheritedWidget {
+  final TaskFormWidgetModel model;
+
   const TaskFormWidgetModelProvider({
-    Key? key,
     required this.model,
-    required this.child,
+    required Widget child,
+    Key? key,
   }) : super(
           key: key,
           child: child,
         );
 
-  final Widget child;
-  final TaskFormWidgetModel model;
+  @override
+  bool updateShouldNotify(TaskFormWidgetModelProvider oldWidget) {
+    return false; //!!!  если ничего не надо обновлять на экране
+  }
 
   static TaskFormWidgetModelProvider? watch(BuildContext context) {
     return context
@@ -54,10 +53,5 @@ class TaskFormWidgetModelProvider extends InheritedWidget {
         .getElementForInheritedWidgetOfExactType<TaskFormWidgetModelProvider>()
         ?.widget;
     return widget is TaskFormWidgetModelProvider ? widget : null;
-  }
-
-  @override
-  bool updateShouldNotify(TaskFormWidgetModelProvider oldWidget) {
-    return false;  //!!!  если ничего не надо обновлять на экране
   }
 }

@@ -5,10 +5,10 @@ import 'package:todo_manager/ui/widgets/task_form/task_form_widget.dart';
 import 'package:todo_manager/ui/widgets/tasks/tasks_widget.dart';
 
 abstract class MainNavigationRoutesName {
-  static const groups = 'groups';
-  static const groupForm = 'groups/form';
-  static const tasks = 'groups/tasks';
-  static const taskForm = 'groups/tasks/form';
+  static const groups = '/';
+  static const groupForm = '/form';
+  static const tasks = '/tasks';
+  static const taskForm = '/tasks/form';
 }
 
 class MainNavigation {
@@ -32,9 +32,10 @@ class MainNavigation {
         );
       default:
         return MaterialPageRoute(
-            builder: (context) => const Center(
-                  child: Text('Navigation Error'),
-                ));
+          builder: (context) => const Center(
+            child: Text('Navigation Error'),
+          ),
+        );
     }
   }
 }
