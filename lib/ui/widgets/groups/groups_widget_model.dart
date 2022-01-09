@@ -20,17 +20,6 @@ class GroupsWidgetModel extends ChangeNotifier {
     Navigator.of(context).pushNamed(MainNavigationRoutesName.groupForm);
   }
 
-  Future<void> showTasks(BuildContext context, int index) async {
-    final groupKey = (await _box).keyAt(index) as int;
-    unawaited(
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).pushNamed(
-        MainNavigationRoutesName.tasks,
-        arguments: groupKey,
-      ),
-    );
-  }
-
   Future<void> removeGroup(int index) async {
     //Открытие TaskBox для того что бы удалить таски внедренные в группу
     await BoxManager.instance.openTaskBox();
@@ -40,6 +29,21 @@ class GroupsWidgetModel extends ChangeNotifier {
     _groups = (await _box).values.toList();
   }
 
+  void showTasks(BuildContext context, int index) {
+    _getGroupKey(index).then((value) {
+      unawaited(
+        Navigator.of(context).pushNamed(
+          MainNavigationRoutesName.tasks,
+          arguments: value,
+        ),
+      );
+    });
+  }
+
+  Future<int> _getGroupKey(int index) async {
+    return (await _box).keyAt(index) as int;
+  }
+
   Future<void> _readGroupsFromHive(Future<Box<Group>> box) async {
     _groups = (await box).values.toList();
     notifyListeners();
@@ -47,7 +51,7 @@ class GroupsWidgetModel extends ChangeNotifier {
 
   Future<void> _setup() async {
     _box = BoxManager.instance.openGroupBox();
-    unawaited(_readGroupsFromHive(_box)) ;
+    unawaited(_readGroupsFromHive(_box));
     (await _box).listenable().addListener(() => _readGroupsFromHive(_box));
   }
 }
@@ -59,7 +63,6 @@ class GroupsWidgetModelProvider extends InheritedNotifier {
     required Widget child,
     required this.model,
     Key? key,
-    
   }) : super(
           key: key,
           child: child,

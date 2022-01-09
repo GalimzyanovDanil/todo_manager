@@ -9,7 +9,11 @@ class TaskFormWidgetModel {
     required this.groupKey,
   });
 
-  Future<void> saveTask(BuildContext context) async {
+  void saveTask(BuildContext context) {
+    _saveTask().then((value) => Navigator.of(context).pop());
+  }
+
+  Future<void> _saveTask() async {
     if (taskText.isEmpty) return;
 
     final groupsBox = await BoxManager.instance.openGroupBox();
@@ -20,9 +24,6 @@ class TaskFormWidgetModel {
 
     final group = groupsBox.get(groupKey);
     group?.addTask(tasksBox, task);
-
-    // ignore: use_build_context_synchronously
-    Navigator.of(context).pop();
   }
 }
 

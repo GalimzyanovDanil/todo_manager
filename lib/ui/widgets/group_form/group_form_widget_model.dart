@@ -8,12 +8,14 @@ class GroupFormWidgetModel {
   String groupName = '';
   bool groupNameIsEmpty = false;
 
-  Future<void> saveGroupName(BuildContext context) async {
+  void saveGroupName(BuildContext context) {
+    _saveGroupName().then((value) => Navigator.of(context).pop());
+  }
+
+  Future<void> _saveGroupName() async {
     if (groupName.isEmpty) return;
     final box = await BoxManager.instance.openGroupBox();
     unawaited(box.add(Group(name: groupName)));
-    // ignore: use_build_context_synchronously
-    Navigator.of(context).pop();
   }
 }
 
